@@ -1,0 +1,12 @@
+smshost="192.168.1.100"
+smsusername="admin"
+smspassword="admin"
+smsrecipients=["0660066006","0620022002"]
+smssize=160
+smstemplate="Nouveau mail de %s. Object %s. Message ..."
+
+mailboxserver="smtp.domain.net"
+mailboxlogin="charlie@domain.net"
+mailboxpassword="charlieroot"
+
+pidfile='/run/lock/smsgateway.pid'
