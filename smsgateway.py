@@ -14,13 +14,14 @@ from email.header import decode_header
 from messaging.sms import SmsSubmit
 
 def fetch_unread_mails():
+	"""Fetch unread emails on specific mailbox, and returns some fields"""
 	mail = imaplib.IMAP4_SSL(config.mailboxserver)
 	mail.login(config.mailboxlogin,config.mailboxpassword)
 	mail.list()
 	status,messages = mail.select("INBOX")
-	
+
 	mails=[]
-	
+
 	n=0
 	retcode, messages = mail.search(None, '(UNSEEN)')
 	if retcode == 'OK':
@@ -41,6 +42,7 @@ def fetch_unread_mails():
 	return mails
 
 def clearallsms():
+	"""Clears all stored SMS on Portech like gateways"""
 	try:
 		count=0
 		tn = telnetlib.Telnet(config.smshost,23)
@@ -58,18 +60,20 @@ def clearallsms():
 	except:
 		print("Unexpected error:", sys.exc_info()[0])
 		raise
-	
 
 def formatsms(message):
+	"""Strip SMS if longer than config.smssize"""
         if len(message) > config.smssize:
                 message = message[:config.smssize]
         return message
 
 def imap2sms(sender,subject):
+	"""Uses a template to make a short message from email fields"""
 	sms=config.smstemplate % (sender,subject)
 	return sms
 
 def pduformat(phonenumber,message):
+	"""Formats SMS using pdu encoding"""
 	sms = SmsSubmit(phonenumber, message)
 	pdu = sms.to_pdu()[0]
 	pdustring=pdu.pdu
@@ -80,6 +84,7 @@ def pduformat(phonenumber,message):
 	return pdustring,pdulength
 
 def sendsms(pdustring,pdulenght):
+	"""Send SMS using telnetlib, returns exception when issues with telnet communication"""
 	try:
 		time.sleep(2)
 		tn = telnetlib.Telnet(config.smshost,23)
@@ -103,6 +108,7 @@ def sendsms(pdustring,pdulenght):
 		raise
 
 def usage():
+	"""Prints usage"""
 	usage="smsgateway.py subcommands : \n\n%s imap2sms\n%s sms <number> <message>\n%s clearallsms\n" % (sys.argv[0],sys.argv[0],sys.argv[0])
 	return usage
 
