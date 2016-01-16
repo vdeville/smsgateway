@@ -8,5 +8,6 @@ smsgateway.py imap2sms
 smsgateway.py sms <number> <message>
 smsgateway.py clearallsms
 
-## Requirements :
-python-messaging available on : [link](https://github.com/pmarti/python-messaging)
+
+## Requirements :
+python-messaging available on : [pmarti/python-messaging](https://github.com/pmarti/python-messaging)
