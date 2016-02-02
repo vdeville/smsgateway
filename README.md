@@ -4,9 +4,9 @@ This script is able to communicate with portech GSM voip gateways, and send sing
 it to SMS
 
 ## Usage :
-smsgateway.py imap2sms
-smsgateway.py sms <number> <message>
-smsgateway.py clearallsms
+* smsgateway.py imap2sms
+* smsgateway.py sms <number> <message>
+* smsgateway.py clearallsms
 
 
 ## Requirements :
