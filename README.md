@@ -1,7 +1,8 @@
 # smsgateway
 smsgateway supporting portech gsm gateway
-This script is able to communicate with portech GSM voip gateways, and send single SMS or fetch mails and transforms 
-it to SMS
+
+This script is able to communicate with Portech GSM gateways (tested on MV370), and send single SMS or fetch mails and transforms 
+it to SMS. It uses the python-messaging package for PDU encodings
 
 ## Usage :
 * smsgateway.py imap2sms
