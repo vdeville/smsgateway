@@ -5,9 +5,9 @@ This script is able to communicate with Portech GSM gateways (tested on MV370), 
 it to SMS. It uses the python-messaging package for PDU encodings
 
 ## Usage :
-* smsgateway.py imap2sms
-* smsgateway.py sms <number> <message>
-* smsgateway.py clearallsms
+* `smsgateway.py imap2sms`
+* `smsgateway.py sms <number> <message>`
+* `smsgateway.py clearallsms`
 
 
 ## Requirements :
