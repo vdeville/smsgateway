@@ -1,12 +1,10 @@
-smshost="192.168.1.100"
-smsusername="admin"
-smspassword="admin"
-smsrecipients=["0660066006","0620022002"]
-smssize=160
-smstemplate="Nouveau mail de %s. Object %s. Message ..."
+smshost = "192.168.1.100"
+smsusername = "admin"
+smspassword = "admin"
+smssize = 160
+smstemplate = "Nouveau mail de %s. Object %s. Message ..."
+smsformat = "ascii"
 
-mailboxserver="smtp.domain.net"
-mailboxlogin="charlie@domain.net"
-mailboxpassword="charlieroot"
+mailboxes = "/home/paul/PycharmProjects/smsgateway/mailbox.csv"
 
-pidfile='/run/lock/smsgateway.pid'
+pidfile = "/run/lock/smsgateway.pid"
