@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- encoding: utf-8 -*-
 
 import imaplib
@@ -14,6 +14,11 @@ from messaging.sms import SmsSubmit
 
 
 def csv_config_parser(mailboxes):
+    """
+    Reads CSV config, returns as a list
+    :param mailboxes:
+    :return:
+    """
     params = []
     with open(mailboxes) as f:
         for line in f:
@@ -27,7 +32,7 @@ def csv_config_parser(mailboxes):
 
 def fetch_unread_mails(mailboxserver, mailboxlogin, mailboxpassword):
     """
-        Fetch unread emails on specific mailbox, and returns some fields
+    Fetch unread emails on specific mailbox, and returns some fields
     :param mailboxserver:
     :param mailboxlogin:
     :param mailboxpassword:
@@ -87,6 +92,8 @@ def clear_all_sms():
 def resize_ascii_sms(message):
     """
     Strip message if longer than config.smssize
+    :param message: Message to resize
+    :return message: Resized message
     """
     value = config.smssize-3
     if len(message) > value:
@@ -97,8 +104,8 @@ def resize_ascii_sms(message):
 def resize_pdu_sms(message):
     """
     Strip SMS if longer than config.smssize
-    :param message:
-    :return: str
+    :param message: Message to resize
+    :return message: Resized message
     """
     if len(message) > config.smssize:
             message = message[:config.smssize]
@@ -117,14 +124,19 @@ def sms_template(sender, subject):
 
 
 def imap2sms(conf):
-    for list in conf:
-        username = list[0]
-        password = list[1]
-        mailserver = list[2]
+    """
+    Send a sms
+    :param conf:
+    :return:
+    """
+    for l in conf:
+        username = l[0]
+        password = l[1]
+        mailserver = l[2]
         numbers = []
         i = 3
-        while i < len(list):
-            numbers.append(list[i])
+        while i < len(l):
+            numbers.append(l[i])
             i += 1
 
         mails = fetch_unread_mails(username, password, mailserver)
@@ -140,9 +152,13 @@ def imap2sms(conf):
                     sms = resize_ascii_sms(sms_template(sender, subject))
                     send_ascii_sms(number, sms)
 
+
 def pduformat(phonenumber, message):
     """
-        Formats SMS using pdu encoding
+    Formats SMS using pdu encoding
+    :param phonenumber: Phone number to insert in pdu
+    :param message: Text message
+    :return: pdustring, pdulenght
     """
     sms = SmsSubmit(phonenumber, message)
     pdu = sms.to_pdu()[0]
@@ -156,7 +172,9 @@ def pduformat(phonenumber, message):
 
 def send_ascii_sms(phonenumber, sms):
     """
-        Send SMS using telnetlib, returns exception when issues with telnet communication
+    Send SMS using telnetlib, returns exception when issues with telnet communication
+    :param phonenumber: Phone number to insert in pdu
+    :param sms: Text message
     """
     decoded_sms = sms.encode("ascii", "ignore")
     try:
@@ -184,9 +202,9 @@ def send_ascii_sms(phonenumber, sms):
 
 def send_pdu_sms(pdustring, pdulenght):
     """
-        Send SMS using telnetlib, returns exception when issues with telnet communication
-        :param pdustring: is the converted sms to pdu format
-        :param pdulenght: is the size of the pdustring
+    Send SMS using telnetlib, returns exception when issues with telnet communication
+    :param pdustring: is the converted sms to pdu format
+    :param pdulenght: is the size of the pdustring
     """
     try:
         time.sleep(2)
@@ -213,7 +231,8 @@ def send_pdu_sms(pdustring, pdulenght):
 
 def usage():
     """
-        Prints usage
+    Prints usage
+    :return: str
     """
     usagetext = "smsgateway.py subcommands : \n\n%s imap2sms\n%s sms <number> <message>\n%s clearallsms\n" % (
         sys.argv[0], sys.argv[0], sys.argv[0])
@@ -222,8 +241,8 @@ def usage():
 
 def debug():
     """
-        Debug Function
-    :return:
+    Debug Function
+    :return: bool
     """
     return True
 
