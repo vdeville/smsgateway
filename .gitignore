@@ -61,3 +61,7 @@ target/
 # Config files
 config.py
 mailbox.csv
+
+# other
+.idea/
+smsgateway.iml

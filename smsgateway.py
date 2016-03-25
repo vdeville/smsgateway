@@ -200,11 +200,11 @@ def send_ascii_sms(phonenumber, sms):
         raise
 
 
-def send_pdu_sms(pdustring, pdulenght):
+def send_pdu_sms(pdustring, pdulength):
     """
     Send SMS using telnetlib, returns exception when issues with telnet communication
     :param pdustring: is the converted sms to pdu format
-    :param pdulenght: is the size of the pdustring
+    :param pdulength: is the size of the pdustring
     """
     try:
         time.sleep(2)
