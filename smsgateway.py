@@ -167,10 +167,10 @@ def pduformat(phonenumber, message):
     # debug output
     # print(phonenumber, message)
     # print(pdu.length, pdu.pdu)
-    return pdustring, pdulength
+    return pdustring, pdulength, phonenumber, message
 
 
-def send_ascii_sms(phonenumber, sms):
+def send_ascii_sms(phonenumber, sms, phonenumbre, message):
     """
     Send SMS using telnetlib, returns exception when issues with telnet communication
     :param phonenumber: Phone number to insert in pdu
@@ -195,12 +195,13 @@ def send_ascii_sms(phonenumber, sms):
         tn.write("%s\x1A" % decoded_sms)
         tn.read_until("+CMGS")
         tn.close()
+        print ("SMS send to telnet to %s with message %s" % phonenumber, message)
     except:
         print("Unexpected error :", sys.exc_info()[0])
         raise
 
 
-def send_pdu_sms(pdustring, pdulength):
+def send_pdu_sms(pdustring, pdulength, phonenumber, message):
     """
     Send SMS using telnetlib, returns exception when issues with telnet communication
     :param pdustring: is the converted sms to pdu format
@@ -224,6 +225,7 @@ def send_pdu_sms(pdustring, pdulength):
         tn.write("%s\r\n\x1A" % pdustring)
         tn.read_until("+CMGS")
         tn.close()
+        print ("SMS send to telnet to %s with message %s" % phonenumber, message)
     except:
         print("Unexpected error:", sys.exc_info()[0])
         raise
@@ -263,11 +265,11 @@ if len(sys.argv) > 1:
         if len(sys.argv) == 4:
             phonenumber = sys.argv[2]
             sms = sys.argv[3]
-            pdustring, pdulength = pduformat(phonenumber, sms)
+            pdustring, pdulength, phonenumber, message = pduformat(phonenumber, sms)
             if config.smsformat == "pdu":
-                send_pdu_sms(pdustring, pdulength)
+                send_pdu_sms(pdustring, pdulength, phonenumber, message)
             elif config.smsformat == "ascii":
-                send_ascii_sms(phonenumber, sms)
+                send_ascii_sms(phonenumber, sms, phoneumber, message)
         else:
             print(usage())
 
