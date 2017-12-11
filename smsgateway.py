@@ -8,9 +8,24 @@ import telnetlib
 import config
 import fcntl
 import sys
+import datetime
 
 from email.header import decode_header
 from messaging.sms import SmsSubmit
+
+instanceSeparator = True
+
+def log(message, level = 'INFO'):
+    global instanceSeparator
+    if instanceSeparator:
+        print ""
+        print "=== (INSTANCE) ==="
+        instanceSeparator = False
+    if config.log:
+        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print ("%s [ %s ] %s" % (date, level, message))
+
+    return True
 
 
 def csv_config_parser(mailboxes):
@@ -85,7 +100,7 @@ def clear_all_sms():
             tn.read_until("\r\n")
         tn.close()
     except:
-        print("Unexpected error:", sys.exc_info()[0])
+        log(("Error clear sms %s" % sys.exc_info()[0]), 'ERROR')
         raise
 
 
@@ -130,30 +145,39 @@ def imap2sms(conf):
     :return:
     """
     for l in conf:
-        username = l[0]
-        password = l[1]
-        mailserver = l[2]
+        username = l[1]
+        password = l[2]
+        mailserver = l[0]
         numbers = []
         i = 3
         while i < len(l):
             numbers.append(l[i])
             i += 1
-
-        mails = fetch_unread_mails(username, password, mailserver)
+        mails = fetch_unread_mails(mailserver, username, password)
         for number in numbers:
             for mail in mails:
                 sender = mail[0]
                 subject = mail[1]
-                if config.smsformat == "pdu":
-                    sms = resize_pdu_sms(sms_template(sender, subject))
-                    pdustring, pdulength = pduformat(number, sms)
-                    send_pdu_sms(pdustring, pdulength)
-                elif config.smsformat == "ascii":
-                    sms = resize_ascii_sms(sms_template(sender, subject))
-                    send_ascii_sms(number, sms)
+                send_sms(number, subject, sender)
 
 
-def pduformat(phonenumber, message):
+def send_sms(number, subject, sender):
+    if config.smsformat == 'pdu':
+        sms = resize_pdu_sms(sms_template(sender, subject))
+        pdustring, pdulength, phonenumber, message = pdu_format(number, sms)
+        send_pdu_sms(pdustring, pdulength)
+        log(("Message sent to %s with text %s using PDU method" % (number, message)))
+        return True
+    elif config.smsformat == 'ascii':
+        sms = resize_ascii_sms(sms_template(sender, subject))
+        send_ascii_sms(number, sms)
+        log(("Message sent to %s with text %s using ASCII method" % (number, sms)))
+        return True
+    else:
+        return False
+
+
+def pdu_format(phonenumber, message):
     """
     Formats SMS using pdu encoding
     :param phonenumber: Phone number to insert in pdu
@@ -164,10 +188,7 @@ def pduformat(phonenumber, message):
     pdu = sms.to_pdu()[0]
     pdustring = pdu.pdu
     pdulength = pdu.length
-    # debug output
-    # print(phonenumber, message)
-    # print(pdu.length, pdu.pdu)
-    return pdustring, pdulength
+    return pdustring, pdulength, phonenumber, message
 
 
 def send_ascii_sms(phonenumber, sms):
@@ -196,7 +217,7 @@ def send_ascii_sms(phonenumber, sms):
         tn.read_until("+CMGS")
         tn.close()
     except:
-        print("Unexpected error :", sys.exc_info()[0])
+        log(("Error when send SMS with Telnet: %s" % sys.exc_info()[0]), 'ERROR')
         raise
 
 
@@ -225,7 +246,7 @@ def send_pdu_sms(pdustring, pdulength):
         tn.read_until("+CMGS")
         tn.close()
     except:
-        print("Unexpected error:", sys.exc_info()[0])
+        log(("Error when send SMS with Telnet: %s" % sys.exc_info()[0]), 'ERROR')
         raise
 
 
@@ -252,7 +273,7 @@ try:
     fcntl.lockf(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
 except IOError:
     # another instance is running
-    print 'Error: Another instance is running...'
+    log("Error: Another instance is running...", 'ERROR')
     sys.exit(0)
 
 if len(sys.argv) > 1:
@@ -263,8 +284,8 @@ if len(sys.argv) > 1:
         if len(sys.argv) == 4:
             phonenumber = sys.argv[2]
             sms = sys.argv[3]
-            pdustring, pdulength = pduformat(phonenumber, sms)
             if config.smsformat == "pdu":
+                pdustring, pdulength, phonenumber, message = pdu_format(phonenumber, sms)
                 send_pdu_sms(pdustring, pdulength)
             elif config.smsformat == "ascii":
                 send_ascii_sms(phonenumber, sms)
@@ -277,6 +298,10 @@ if len(sys.argv) > 1:
 
     elif sys.argv[1] == "debug":
         print debug()
+
+    else:
+        print(usage())
+        exit(1)
 else:
     print(usage())
     exit(1)

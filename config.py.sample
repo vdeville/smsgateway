@@ -5,6 +5,7 @@ smssize = 160
 smstemplate = "Nouveau mail de %s. Object %s. Message ..."
 smsformat = "ascii"
 
-mailboxes = "/home/paul/PycharmProjects/smsgateway/mailbox.csv"
+mailboxes = "mailbox.csv"
 
 pidfile = "/run/lock/smsgateway.pid"
+log = True
