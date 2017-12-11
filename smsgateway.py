@@ -144,16 +144,15 @@ def imap2sms(conf):
     :return:
     """
     for l in conf:
-        username = l[0]
-        password = l[1]
-        mailserver = l[2]
+        username = l[1]
+        password = l[2]
+        mailserver = l[0]
         numbers = []
         i = 3
         while i < len(l):
             numbers.append(l[i])
             i += 1
-
-        mails = fetch_unread_mails(username, password, mailserver)
+        mails = fetch_unread_mails(mailserver, username, password)
         for number in numbers:
             for mail in mails:
                 sender = mail[0]
