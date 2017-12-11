@@ -13,8 +13,13 @@ import datetime
 from email.header import decode_header
 from messaging.sms import SmsSubmit
 
+instanceSeprator = True
 
 def log(message, level = 'INFO'):
+    if instanceSeparator:
+        print ""
+        print "=== (INSTANCE) ==="
+        instanceSeparator = False
     if config.log:
         date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print ("%s [ %s ] %s" % (date, level, message))
