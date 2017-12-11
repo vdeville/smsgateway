@@ -13,9 +13,10 @@ import datetime
 from email.header import decode_header
 from messaging.sms import SmsSubmit
 
-instanceSeprator = True
+instanceSeparator = True
 
 def log(message, level = 'INFO'):
+    global instanceSeparator
     if instanceSeparator:
         print ""
         print "=== (INSTANCE) ==="
