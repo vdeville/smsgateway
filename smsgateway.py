@@ -22,6 +22,7 @@ def log(message, level = 'INFO'):
         print "=== (INSTANCE) ==="
         instanceSeparator = False
     if config.log:
+        message = message.encode('ascii', 'ignore').decode('ascii')
         date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print ("%s [ %s ] %s" % (date, level, message))
 
