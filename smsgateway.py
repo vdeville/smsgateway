@@ -185,11 +185,22 @@ def pdu_format(phonenumber, message):
     :param message: Text message
     :return: pdustring, pdulenght
     """
-    sms = SmsSubmit(phonenumber, message)
+    # Whitelist char
+    whitelist = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    whitelist = whitelist + range(0, 9)
+    whitelist = whitelist + [' ', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    fixed_message = ""
+    for chr in message:
+        if chr in whitelist:
+            fixed_message += chr
+        else:
+            fixed_message += "."
+
+    sms = SmsSubmit(phonenumber, fixed_message)
     pdu = sms.to_pdu()[0]
     pdustring = pdu.pdu
     pdulength = pdu.length
-    return pdustring, pdulength, phonenumber, message
+    return pdustring, pdulength, phonenumber, fixed_message
 
 
 def send_ascii_sms(phonenumber, sms):
